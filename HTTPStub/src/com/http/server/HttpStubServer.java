@@ -8,10 +8,14 @@ import com.http.properties.PropertiesData;
 import com.sun.net.httpserver.HttpServer;
 
 public class HttpStubServer {
+	
+	private static StubHandler stub;
 
 	public static void main(String[] args) {
-		
-		
+		PropertiesData.setFileProperties(args[0]);
+		stub=PropertiesData.getStubHandler();
+		stub.setDB(PropertiesData.getDBInterface());
+		stub.setParser(PropertiesData.getParser());
 		HttpStubServer server=new HttpStubServer();
 		try {
 			server.startServer();
@@ -23,7 +27,7 @@ public class HttpStubServer {
 	
 	public void startServer() throws IOException{
     	HttpServer	server = HttpServer.create(new InetSocketAddress(PropertiesData.getPort()), 0);
-		server.createContext(PropertiesData.getContext(), PropertiesData.getHttpHandler());
+    	server.createContext(PropertiesData.getContext(), stub);
 	    server.setExecutor(Executors.newFixedThreadPool(50));
 	    server.start();
 	}

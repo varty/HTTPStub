@@ -7,11 +7,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.http.db.DBInterface;
-import com.http.server.HttpStubHandler;
-import com.sun.net.httpserver.HttpHandler;
+import com.http.db.Connect;
+import com.http.db.ConnectImpl;
+import com.http.db.DatabaseDataImpl;
+import com.http.db.DatabaseData;
+import com.http.parser.DOMParser;
+import com.http.parser.ParserInterface;
+import com.http.server.StubHandlerImpl;
+import com.http.server.StubHandler;
 
-public class PropertiesData {
+public final class PropertiesData {
 	
 	private static String propertiesName="example.properties";
 	
@@ -31,7 +36,6 @@ public class PropertiesData {
 	private PropertiesData(){}
 	
 	private static Properties getDefault(){
-		propertiesFile=new File("/", propertiesName);
 		Properties defaultSettings=new Properties();
 		defaultSettings.put(PORT, 8000);
 		defaultSettings.put(CONTEXT, "/test");
@@ -54,14 +58,7 @@ public class PropertiesData {
 		return defaultSettings;
 	}
 	
-	public static void setFileProperties(String path){
-		if (path.length()>0)
-			propertiesFile=new File(path);
-		else propertiesFile=new File("/", propertiesName);
-	}
-	
-	public static void readSettings(){
-		
+	private static void readSettings(){
 		if(!propertiesFile.exists()){
 			properties=getDefault();
 		}else{
@@ -79,6 +76,13 @@ public class PropertiesData {
 		}
 	}
 	
+	public static void setFileProperties(String path){
+		if (path.length()>0)
+			propertiesFile=new File(path);
+		else propertiesFile=new File("/", propertiesName);
+		readSettings();
+	}
+
 	public static int getPort(){
 		return Integer.parseInt(properties.getProperty(PORT));
 	}
@@ -103,16 +107,27 @@ public class PropertiesData {
 		return properties.getProperty(URL);
 	}
 	
-	public static String getXMLElementAddress(){
+	public static String getURLJDBC(){
+		return properties.getProperty(URL_JDBC);
+	}
+	
+	public static String getXPath(){
 		return properties.getProperty(X_PATH);
 	}
 	
-	public static HttpHandler getHttpHandler(){
-		return new HttpStubHandler(getDBInterface());
+	public static ParserInterface getParser(){
+		return new DOMParser();
 	}
 	
-	public static DBInterface getDBInterface(){
-		//TODO create return object
-		return null;
+	public static StubHandler getStubHandler(){
+		return new StubHandlerImpl();
+	}
+	
+	public static DatabaseData getDBInterface(){
+		return new DatabaseDataImpl();
+	}
+
+	public static Connect getConnect() {
+		return new ConnectImpl();
 	}
 }

@@ -7,20 +7,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import com.http.db.DBInterface;
+import com.http.db.DatabaseData;
 import com.http.parser.ParserInterface;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
-public class HttpStubHandler implements HttpHandler {
+public class StubHandlerImpl implements StubHandler {
 
 	private ParserInterface parser;
 	private BufferedReader bufReader;
-	private DBInterface db;
-	
-	public HttpStubHandler(DBInterface db){
-		this.db=db;
-	}
+	private DatabaseData db;
+	private String emptyRequest="Empty";
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
@@ -30,6 +26,11 @@ public class HttpStubHandler implements HttpHandler {
 
 	public void setParser(ParserInterface parser){
 		this.parser=parser;
+		this.parser.setDBInterface(db);
+	}
+	
+	public void setDB(DatabaseData db){
+		this.db=db;
 	}
 	
 	private void getRequest(HttpExchange exchange) throws IOException{
@@ -37,24 +38,11 @@ public class HttpStubHandler implements HttpHandler {
 		bufReader=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
 		inputHttpBody=saveToString();
 		if (inputHttpBody!=null){
-			//TODO Save input body to DB method
 			parse(inputHttpBody);
+			db.saveHistory(inputHttpBody);
+		}else{
+			db.saveHistory(emptyRequest);
 		}
-	}
-	
-	private String saveToString() throws IOException{
-		String inputString;
-		StringBuffer strBuffer=new StringBuffer();
-		while((inputString=bufReader.readLine())!=null){
-			strBuffer.append(inputString);
-		}
-		if (strBuffer.length()>0) 
-			return strBuffer.toString();
-		else return null;
-	}
-	
-	private void parse(String body){
-		parser.parse(new ByteArrayInputStream(body.getBytes()));
 	}
 	
 	private void response(HttpExchange exchange){
@@ -70,6 +58,21 @@ public class HttpStubHandler implements HttpHandler {
 			e.printStackTrace();
 		}
 		exchange.close();
+	}
+
+	private String saveToString() throws IOException{
+		String inputString;
+		StringBuffer strBuffer=new StringBuffer();
+		while((inputString=bufReader.readLine())!=null){
+			strBuffer.append(inputString);
+		}
+		if (strBuffer.length()>0) 
+			return strBuffer.toString();
+		else return null;
+	}
+	
+	private void parse(String body){
+		parser.parse(new ByteArrayInputStream(body.getBytes()));
 	}
 
 }
