@@ -6,5 +6,7 @@ public interface DatabaseData {
 	
 	public void setResponseString(String key);
 	
-	public void saveHistory(String body);
+	public void setXML(String xml);
+	
+	void saveHistoryNull();
 }

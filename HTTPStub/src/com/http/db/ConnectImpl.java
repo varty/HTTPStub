@@ -21,7 +21,7 @@ public class ConnectImpl implements Connect {
 	private Connection conn;
 	private URLClassLoader cl;
 	
-	private final String getResponseQuery="SELECT ResponseBody, ResponseID FROM responseset WHERE KeyString like ?";
+	private final String getResponseQuery="SELECT ResponseBody, ResponseID FROM responseset WHERE KeyString = ?";
 	private final String saveHistory="INSERT INTO history (RequestBody, Response) VALUES (?,?)";
 	private final String saveHistoryNull="INSERT INTO history (RequestBody) VALUES (?)";
 	
@@ -68,8 +68,8 @@ public class ConnectImpl implements Connect {
 	public void saveHistory(String body, String response) throws SQLException {
 		PreparedStatement historyStat=conn.prepareStatement(saveHistory);
 		historyStat.setString(1, body);
-		historyStat.setString(1, response);
-		historyStat.executeQuery();
+		historyStat.setString(2, response);
+		historyStat.executeUpdate();
 		historyStat.close();
 	}
 	
@@ -77,16 +77,17 @@ public class ConnectImpl implements Connect {
 	public void saveHistory(String body) throws SQLException {
 		PreparedStatement historyStat=conn.prepareStatement(saveHistoryNull);
 		historyStat.setString(1, body);
-		historyStat.executeQuery();
+		historyStat.executeUpdate();
 		historyStat.close();
 	} 
 	
 	@Override
-	public String getResponse(String key) throws SQLException{
+	public String getResponse(String key, String xml) throws SQLException{
 		PreparedStatement responseStat=conn.prepareStatement(getResponseQuery);
 		responseStat.setString(1, key);
 		ResultSet rs=responseStat.executeQuery();
-		saveHistory(rs.getString("ResponseID"),key);
+		rs.next();
+		saveHistory(xml,rs.getString("ResponseID"));
 		String response=rs.getString("ResponseBody");
 		responseStat.close();
 		return response;

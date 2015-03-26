@@ -9,6 +9,7 @@ public class DatabaseDataImpl implements DatabaseData{
 	
 	private Connect connect;
 	private String response;
+	private String xml;
 	
 	public DatabaseDataImpl(){
 		connect=PropertiesData.getConnect();
@@ -21,9 +22,11 @@ public class DatabaseDataImpl implements DatabaseData{
 	}
 
 	public String getResponseString() {
-		if(response==null || response.length()==0)
-			response=getDefaultResponse();
 		return response;
+	}
+	
+	public void setXML(String xml){
+		this.xml=xml;
 	}
 	
 	@Override
@@ -32,25 +35,26 @@ public class DatabaseDataImpl implements DatabaseData{
 			response=getDefaultResponse();
 		}else{
 			try {
-				response=connect.getResponse(key);
+				response=connect.getResponse(key, xml);
 			} catch (SQLException e) {
 				e.printStackTrace();
+				saveHistoryNull();
 			}
 		}
 	}
-
+	
 	@Override
-	public void saveHistory(String body) {
+	public void saveHistoryNull() {
+		response=null;
 		try {
-			connect.saveHistory(body, response);
+			connect.saveHistory(xml);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private String getDefaultResponse() {
-		return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-				+ "<string>I can't understand you</string>";		
+		return null;		
 	}
 	
 	private void createConnection(){

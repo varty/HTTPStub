@@ -26,5 +26,5 @@ public interface Connect {
 	
 	public void saveHistory(String body) throws SQLException;
 	
-	public String getResponse(String key) throws SQLException;
+	public String getResponse(String key, String xml) throws SQLException;
 }

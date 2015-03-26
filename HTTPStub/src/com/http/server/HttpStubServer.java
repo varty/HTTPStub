@@ -12,10 +12,11 @@ public class HttpStubServer {
 	private static StubHandler stub;
 
 	public static void main(String[] args) {
+		if (args==null){
+			System.exit(0);
+		}
 		PropertiesData.setFileProperties(args[0]);
 		stub=PropertiesData.getStubHandler();
-		stub.setDB(PropertiesData.getDBInterface());
-		stub.setParser(PropertiesData.getParser());
 		HttpStubServer server=new HttpStubServer();
 		try {
 			server.startServer();

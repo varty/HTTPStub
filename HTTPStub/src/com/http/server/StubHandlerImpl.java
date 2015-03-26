@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import com.http.db.DatabaseData;
 import com.http.parser.ParserInterface;
+import com.http.properties.PropertiesData;
 import com.sun.net.httpserver.HttpExchange;
 
 public class StubHandlerImpl implements StubHandler {
@@ -16,10 +17,11 @@ public class StubHandlerImpl implements StubHandler {
 	private ParserInterface parser;
 	private BufferedReader bufReader;
 	private DatabaseData db;
-	private String emptyRequest="Empty";
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		setDB(PropertiesData.getDBInterface());
+		setParser(PropertiesData.getParser());
 		getRequest(exchange);
 		response(exchange);
 	}
@@ -34,28 +36,28 @@ public class StubHandlerImpl implements StubHandler {
 	}
 	
 	private void getRequest(HttpExchange exchange) throws IOException{
-		String inputHttpBody=null;
+		String inputHttpBody;
 		bufReader=new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
 		inputHttpBody=saveToString();
+		db.setXML(inputHttpBody);
 		if (inputHttpBody!=null){
 			parse(inputHttpBody);
-			db.saveHistory(inputHttpBody);
 		}else{
-			db.saveHistory(emptyRequest);
+			db.saveHistoryNull();
 		}
 	}
 	
-	private void response(HttpExchange exchange){
+	private void response(HttpExchange exchange) throws IOException{
 		exchange.getResponseHeaders().put("Content-Type", Arrays.asList("text/xml;charset=UTF-8"));
 		exchange.getResponseHeaders().put("Connection", Arrays.asList("close"));
-		OutputStream os=exchange.getResponseBody();
-		String responseString=db.getResponseString();	
-		try{
+		String responseString=db.getResponseString();
+		if (responseString==null)
+			exchange.sendResponseHeaders(200, 0);
+		else{
+			OutputStream os=exchange.getResponseBody();
 			exchange.sendResponseHeaders(200, responseString.getBytes().length);
 			os.write(responseString.getBytes());
 			os.close();
-		}catch(IOException e){
-			e.printStackTrace();
 		}
 		exchange.close();
 	}

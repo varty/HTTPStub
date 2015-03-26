@@ -37,12 +37,12 @@ public final class PropertiesData {
 	
 	private static Properties getDefault(){
 		Properties defaultSettings=new Properties();
-		defaultSettings.put(PORT, 8000);
+		defaultSettings.put(PORT, "8000");
 		defaultSettings.put(CONTEXT, "/test");
 		defaultSettings.put(LOGIN, "root");
 		defaultSettings.put(PASSWORD, "root");
 		defaultSettings.put(DRIVER, "com.mysql.jdbc.Driver");
-		defaultSettings.put(URL, "jdbc:mysql://localhost:3306/test");
+		defaultSettings.put(URL, "jdbc:mysql://localhost:3306/httpstubserver");
 		defaultSettings.put(URL_JDBC, "jar:file:///C:/Program Files/MySQL/mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar!/");
 		defaultSettings.put(X_PATH,"//*");
 		
@@ -79,7 +79,7 @@ public final class PropertiesData {
 	public static void setFileProperties(String path){
 		if (path.length()>0)
 			propertiesFile=new File(path);
-		else propertiesFile=new File("/", propertiesName);
+		else propertiesFile=new File("\\", propertiesName);
 		readSettings();
 	}
 
