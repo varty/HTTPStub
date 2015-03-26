@@ -79,7 +79,7 @@ public final class PropertiesData {
 	public static void setFileProperties(String path){
 		if (path.length()>0)
 			propertiesFile=new File(path);
-		else propertiesFile=new File("\\", propertiesName);
+		else propertiesFile=new File(propertiesName);
 		readSettings();
 	}
 

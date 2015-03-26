@@ -48,12 +48,12 @@ public class StubHandlerImpl implements StubHandler {
 	}
 	
 	private void response(HttpExchange exchange) throws IOException{
-		exchange.getResponseHeaders().put("Content-Type", Arrays.asList("text/xml;charset=UTF-8"));
 		exchange.getResponseHeaders().put("Connection", Arrays.asList("close"));
 		String responseString=db.getResponseString();
 		if (responseString==null)
 			exchange.sendResponseHeaders(200, 0);
 		else{
+			exchange.getResponseHeaders().put("Content-Type", Arrays.asList("text/xml;charset=UTF-8"));
 			OutputStream os=exchange.getResponseBody();
 			exchange.sendResponseHeaders(200, responseString.getBytes().length);
 			os.write(responseString.getBytes());
