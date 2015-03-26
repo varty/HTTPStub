@@ -13,7 +13,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 public class PropertiesData {
 	
-	private static String propertiesName="stub.properties";
+	private static String propertiesName="example.properties";
 	
 	private static String PORT="Port";
 	private static String CONTEXT="Context";
@@ -21,7 +21,8 @@ public class PropertiesData {
 	private static String PASSWORD="PasswordDB";
 	private static String DRIVER="DriverDB";
 	private static String URL="URL";
-	private static String XML_ELEMENT="XMLElement";
+	private static String URL_JDBC="URL_JDBC";
+	private static String X_PATH="X_Path";
 	
 	private static File propertiesFile;
 	private static Properties properties;
@@ -34,11 +35,12 @@ public class PropertiesData {
 		Properties defaultSettings=new Properties();
 		defaultSettings.put(PORT, 8000);
 		defaultSettings.put(CONTEXT, "/test");
-		defaultSettings.put(LOGIN, "user");
-		defaultSettings.put(PASSWORD, "password");
+		defaultSettings.put(LOGIN, "root");
+		defaultSettings.put(PASSWORD, "root");
 		defaultSettings.put(DRIVER, "com.mysql.jdbc.Driver");
-		defaultSettings.put(URL, "jdbc:mysql://hostname:port/dbname");
-		defaultSettings.put(XML_ELEMENT,"element");
+		defaultSettings.put(URL, "jdbc:mysql://localhost:3306/test");
+		defaultSettings.put(URL_JDBC, "jar:file:///C:/Program Files/MySQL/mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar!/");
+		defaultSettings.put(X_PATH,"//*");
 		
 		FileOutputStream fos;
 		try {
@@ -48,15 +50,18 @@ public class PropertiesData {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Example properties file created");
 		return defaultSettings;
-			
 	}
 	
 	public static void setFileProperties(String path){
-		propertiesFile=new File(path);
+		if (path.length()>0)
+			propertiesFile=new File(path);
+		else propertiesFile=new File("/", propertiesName);
 	}
 	
 	public static void readSettings(){
+		
 		if(!propertiesFile.exists()){
 			properties=getDefault();
 		}else{
@@ -98,9 +103,8 @@ public class PropertiesData {
 		return properties.getProperty(URL);
 	}
 	
-	
-	public static String[] getXMLElementAddress(){
-		return properties.getProperty(XML_ELEMENT).split("/");
+	public static String getXMLElementAddress(){
+		return properties.getProperty(X_PATH);
 	}
 	
 	public static HttpHandler getHttpHandler(){

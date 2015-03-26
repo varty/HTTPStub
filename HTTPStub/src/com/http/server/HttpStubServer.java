@@ -24,7 +24,7 @@ public class HttpStubServer {
 	public void startServer() throws IOException{
     	HttpServer	server = HttpServer.create(new InetSocketAddress(PropertiesData.getPort()), 0);
 		server.createContext(PropertiesData.getContext(), PropertiesData.getHttpHandler());
-	    server.setExecutor(Executors.newCachedThreadPool());
+	    server.setExecutor(Executors.newFixedThreadPool(50));
 	    server.start();
 	}
 
