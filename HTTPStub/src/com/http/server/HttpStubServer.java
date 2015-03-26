@@ -12,10 +12,11 @@ public class HttpStubServer {
 	private static StubHandler stub;
 
 	public static void main(String[] args) {
-		if (args==null){
-			System.exit(0);
+		try{
+			PropertiesData.setFileProperties(args[0]);
+		}catch(ArrayIndexOutOfBoundsException e){
+			PropertiesData.setFileProperties("");
 		}
-		PropertiesData.setFileProperties(args[0]);
 		stub=PropertiesData.getStubHandler();
 		HttpStubServer server=new HttpStubServer();
 		try {
